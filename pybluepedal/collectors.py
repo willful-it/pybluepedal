@@ -21,8 +21,8 @@ def connect(device_address: str, address_type: str, attempt: int = 1):
     except BTLEDisconnectError as error:
         logger.error(f"error connecting to {device_address}: {error}")
         if attempt == settings.BLE_CONNECT_MAX_TRIES:
-            logger.error(("max connect attempts reach for device ",
-                          device_address))
+            logger.error("max connect attempts reach for device "
+                         f"{device_address}")
             return None
 
         logger.info(f"trying to connect again to {device_address}")

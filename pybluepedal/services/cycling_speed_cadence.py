@@ -83,7 +83,7 @@ class CSCService(BaseService):
 
 class CSCDelegate(BaseDelegate):
     def __init__(self, producer_queue: queue.Queue):
-        super().__init__(self, producer_queue)
+        super().__init__(producer_queue)
 
         self._producer_queue = producer_queue
 

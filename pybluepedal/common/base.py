@@ -12,6 +12,6 @@ class BaseService:
 
 class BaseDelegate(DefaultDelegate):
     def __init__(self, producer_queue: queue.Queue):
-        super().__init__(self)
+        super().__init__()
 
         self._producer_queue = producer_queue
