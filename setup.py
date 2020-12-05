@@ -15,7 +15,7 @@ setup(
     long_description=readme,
     author="Renato Torres",
     author_email="renato@willful.pt",
-    url="https://github.com/willful-it/py-blue-pedal",
+    url="https://github.com/willful-it/pybluepedal",
     license=license,
     packages=find_packages(exclude=("tests", "docs"))
 )
