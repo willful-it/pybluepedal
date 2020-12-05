@@ -3,8 +3,8 @@ import queue
 
 from bluepy.btle import DefaultDelegate, Peripheral
 
-from pybluepedal.base import BaseService
-from pybluepedal.byte_ops import check_bit_l2r
+from pybluepedal.common.base import BaseService
+from pybluepedal.common.byte_ops import check_bit_l2r
 
 logger = logging.getLogger("HeartRateService")
 

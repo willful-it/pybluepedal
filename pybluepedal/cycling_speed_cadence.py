@@ -5,8 +5,8 @@ import queue
 from bluepy import btle
 from bluepy.btle import DefaultDelegate, Peripheral
 
-from pybluepedal.base import BaseService
-from pybluepedal.byte_ops import byte_array_to_int
+from pybluepedal.common.base import BaseService
+from pybluepedal.common.byte_ops import byte_array_to_int
 
 logger = logging.getLogger("CSCService")
 
