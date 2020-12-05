@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 from setuptools import find_packages, setup
 
 with open("README.md") as f:
@@ -11,7 +9,9 @@ with open("LICENSE") as f:
 setup(
     name="py-blue-pedal",
     version="0.1.0",
-    description="Python library to interact with Bluetooth Lower Energy (BLE) cycling smart trainers and heart rate monitors",
+    description=(
+        "Python library to interact with Bluetooth Lower Energy (BLE) "
+        "cycling smart trainers and heart rate monitors"),
     long_description=readme,
     author="Renato Torres",
     author_email="renato@willful.pt",

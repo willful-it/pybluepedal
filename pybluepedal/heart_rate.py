@@ -3,33 +3,32 @@ import queue
 
 from bluepy.btle import DefaultDelegate, Peripheral
 
+from pybluepedal.base import BaseService
 from pybluepedal.byte_ops import check_bit_l2r
 
 logger = logging.getLogger("HeartRateService")
 
 
-class HeartRateService:
+class HeartRateService(BaseService):
     UUID = "0000180d"
     CHARACTERISTIC_MEASUREMENT = "00002a37"
 
     def __init__(self, peripheral: Peripheral):
-        self.__peripheral = peripheral
-        self.__service = self.__peripheral.getServiceByUUID(
-            HeartRateService.UUID)
+        super().__init__(peripheral, HeartRateService.UUID)
 
     def start_notifications(self, delegate: DefaultDelegate):
         """Starts the notifications for the characteristic measurement"""
 
         logger.debug("starting notification")
 
-        self.__peripheral.setDelegate(delegate)
+        self._peripheral.setDelegate(delegate)
 
         characteristics = self.__service.getCharacteristics(
             forUUID=HeartRateService.CHARACTERISTIC_MEASUREMENT)
 
         characteristic = characteristics[0]
 
-        resp = self.__peripheral.writeCharacteristic(
+        resp = self._peripheral.writeCharacteristic(
             characteristic.getHandle() + 1, b"\x01\x00", True)
 
         logger.debug(f"notification started: {resp}")
@@ -49,9 +48,17 @@ class HeartRateDelegate(DefaultDelegate):
         logger.debug(f"flag field {bin(flag_field)}")
 
         if not check_bit_l2r(flag_field, 0):
-            data = {"type": cHandle, "value": values[1]}
+            data = {
+                "type": "HeartRate",
+                "handle": cHandle,
+                "value": values[1]
+            }
         else:
-            data = {"type": cHandle, "value": values[1:]}
+            data = {
+                "type": "HeartRate",
+                "handle": cHandle,
+                "value": values[1:]
+            }
 
         self.__producer_queue.put(data)
         logger.debug(f"added to queue {data}")

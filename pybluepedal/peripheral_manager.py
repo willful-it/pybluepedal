@@ -7,8 +7,9 @@ from bluepy.btle import ADDR_TYPE_RANDOM, Peripheral
 
 from pybluepedal.heart_rate import HeartRateDelegate, HeartRateService
 
-logging.basicConfig(level=logging.DEBUG,
-                    format="%(asctime)s %(levelname)s %(threadName)s %(name)s %(message)s")
+logging.basicConfig(
+    level=logging.DEBUG,
+    format="%(asctime)s %(levelname)s %(threadName)s %(name)s %(message)s")
 
 logger = logging.getLogger("PeripheralManager")
 
@@ -27,7 +28,10 @@ def consumer(producer_queue: queue.Queue, stop_queue: queue.Queue):
     logger.info("finish consumer")
 
 
-def peripheral_handling(device_address: str, producer_queue: queue.Queue, stop_queue: queue.Queue):
+def peripheral_handling(
+        device_address: str,
+        producer_queue: queue.Queue,
+        stop_queue: queue.Queue):
 
     logger.info(f"connecting to {device_address}")
     peripheral = Peripheral(device_address, addrType=ADDR_TYPE_RANDOM)
@@ -46,13 +50,15 @@ def run():
     stop_queue = queue.Queue()
 
     threads = []
-    thread = threading.Thread(target=consumer,
-                              args=(producer_queue, stop_queue,))
+    thread = threading.Thread(
+        target=consumer,
+        args=(producer_queue, stop_queue,))
     thread.start()
     threads.append(thread)
 
-    thread = threading.Thread(target=peripheral_handling,
-                              args=("C4:DB:A6:DC:51:5A", producer_queue, stop_queue,))
+    thread = threading.Thread(
+        target=peripheral_handling,
+        args=("C4:DB:A6:DC:51:5A", producer_queue, stop_queue,))
     thread.start()
     threads.append(thread)
 

@@ -1,4 +1,5 @@
-wheel
 autopep8
-pylint
 bluepy
+pre-commit
+pylint
+wheel
