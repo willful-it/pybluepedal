@@ -2,7 +2,6 @@ import logging
 import queue
 
 from bluepy.btle import DefaultDelegate, Peripheral
-
 from pybluepedal.common.base import BaseService
 from pybluepedal.common.byte_ops import check_bit_l2r
 
@@ -23,7 +22,7 @@ class HeartRateService(BaseService):
 
         self._peripheral.setDelegate(delegate)
 
-        characteristics = self.__service.getCharacteristics(
+        characteristics = self._service.getCharacteristics(
             forUUID=HeartRateService.CHARACTERISTIC_MEASUREMENT)
 
         characteristic = characteristics[0]

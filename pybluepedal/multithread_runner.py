@@ -5,7 +5,7 @@ import time
 
 from bluepy.btle import ADDR_TYPE_RANDOM, Peripheral
 
-from pybluepedal.heart_rate import HeartRateDelegate, HeartRateService
+from pybluepedal.services.heart_rate import HeartRateDelegate, HeartRateService
 
 logging.basicConfig(
     level=logging.DEBUG,
