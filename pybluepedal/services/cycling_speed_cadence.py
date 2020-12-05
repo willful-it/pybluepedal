@@ -2,9 +2,8 @@
 import logging
 import queue
 
-from bluepy import btle
-from bluepy.btle import DefaultDelegate, Peripheral
-from pybluepedal.common.base import BaseService
+from bluepy.btle import Peripheral
+from pybluepedal.common.base import BaseDelegate, BaseService
 from pybluepedal.common.byte_ops import byte_array_to_int
 
 logger = logging.getLogger("CSCService")
@@ -66,7 +65,7 @@ class CSCService(BaseService):
         return self.supports_feature(
             CSCService.FEATURE_MULTIPLE_SENSOR_LOCATIONS)
 
-    def start_notifications(self, delegate: DefaultDelegate):
+    def start_notifications(self, delegate: BaseDelegate):
         """Starts the notifications for the characteristic measurement"""
 
         self._peripheral.setDelegate(delegate)
@@ -82,11 +81,11 @@ class CSCService(BaseService):
         logger.debug(f"notification started: {resp}")
 
 
-class CSCDelegate(btle.DefaultDelegate):
+class CSCDelegate(BaseDelegate):
     def __init__(self, producer_queue: queue.Queue):
-        DefaultDelegate.__init__(self)
+        super().__init__(self, producer_queue)
 
-        self.__producer_queue = producer_queue
+        self._producer_queue = producer_queue
 
     def handleNotification(self, cHandle, data):
         logger.debug(f"handing notification {cHandle} {data}")
@@ -107,5 +106,5 @@ class CSCDelegate(btle.DefaultDelegate):
             "last_crank_event_time": last_crank_event_time,
         }
 
-        self.__producer_queue.put(data)
+        self._producer_queue.put(data)
         logger.debug(f"added to queue {data}")

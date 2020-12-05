@@ -1,8 +1,8 @@
 import logging
 import queue
 
-from bluepy.btle import DefaultDelegate, Peripheral
-from pybluepedal.common.base import BaseService
+from bluepy.btle import Peripheral
+from pybluepedal.common.base import BaseDelegate, BaseService
 from pybluepedal.common.byte_ops import check_bit_l2r
 
 logger = logging.getLogger("HeartRateService")
@@ -15,7 +15,7 @@ class HeartRateService(BaseService):
     def __init__(self, peripheral: Peripheral):
         super().__init__(peripheral, HeartRateService.UUID)
 
-    def start_notifications(self, delegate: DefaultDelegate):
+    def start_notifications(self, delegate: BaseDelegate):
         """Starts the notifications for the characteristic measurement"""
 
         logger.debug("starting notification")
@@ -33,11 +33,11 @@ class HeartRateService(BaseService):
         logger.debug(f"notification started: {resp}")
 
 
-class HeartRateDelegate(DefaultDelegate):
+class HeartRateDelegate(BaseDelegate):
     def __init__(self, producer_queue: queue.Queue):
-        DefaultDelegate.__init__(self)
+        super().__init__(self, producer_queue)
 
-        self.__producer_queue = producer_queue
+        self._producer_queue = producer_queue
 
     def handleNotification(self, cHandle, data):
         logger.debug(f"handing notification {cHandle} {data}")
@@ -59,5 +59,5 @@ class HeartRateDelegate(DefaultDelegate):
                 "value": values[1:]
             }
 
-        self.__producer_queue.put(data)
+        self._producer_queue.put(data)
         logger.debug(f"added to queue {data}")

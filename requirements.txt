@@ -2,4 +2,5 @@ autopep8
 bluepy
 flake8
 pre-commit
+python-dotenv
 wheel

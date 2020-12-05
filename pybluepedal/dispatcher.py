@@ -3,10 +3,8 @@ import queue
 import threading
 import time
 
-from bluepy.btle import ADDR_TYPE_RANDOM, Peripheral
-
-from pybluepedal.services.cycling_speed_cadence import CSCDelegate, CSCService
-from pybluepedal.services.heart_rate import HeartRateDelegate, HeartRateService
+import pybluepedal.collectors as collectors
+import pybluepedal.settings as settings
 
 logging.basicConfig(
     level=logging.DEBUG,
@@ -29,40 +27,13 @@ def dispacher(producer_queue: queue.Queue, stop_queue: queue.Queue):
     logger.info("finish consumer")
 
 
-def hrm_listener(
+def call_collector(
+        ble_server: settings.BLEServer,
         producer_queue: queue.Queue,
         stop_queue: queue.Queue):
 
-    device_address = "C4:DB:A6:DC:51:5A"
-    logger.info(f"connecting to heart rate monitor: {device_address}")
-    hrm_device = Peripheral(device_address, addrType=ADDR_TYPE_RANDOM)
-    hrm_service = HeartRateService(hrm_device)
-    hrm_service.start_notifications(HeartRateDelegate(producer_queue))
-
-    device_address = "F1:80:A8:A8:3A:0F"
-
-    while stop_queue.empty():
-        hrm_device.waitForNotifications(1.0)
-
-    hrm_device.disconnect()
-    logger.info("heart rate monitor device disconnected")
-
-
-def trainer_listener(
-        producer_queue: queue.Queue,
-        stop_queue: queue.Queue):
-
-    device_address = "F1:80:A8:A8:3A:0F"
-    logger.info(f"connecting to smart trainer: {device_address}")
-    csc_device = Peripheral(device_address, addrType=ADDR_TYPE_RANDOM)
-    csc_service = CSCService(csc_device)
-    csc_service.start_notifications(CSCDelegate(producer_queue))
-
-    while stop_queue.empty():
-        csc_device.waitForNotifications(1.0)
-
-    csc_device.disconnect()
-    logger.info("smart trainer disconnected")
+    method_to_call = getattr(collectors, str(ble_server.function))
+    method_to_call(ble_server, producer_queue, stop_queue)
 
 
 def run():
@@ -70,23 +41,21 @@ def run():
     stop_queue = queue.Queue()
 
     threads = []
+
+    logger.info("starting dispatcher thread")
     thread = threading.Thread(
         target=dispacher,
         args=(producer_queue, stop_queue,))
     thread.start()
     threads.append(thread)
 
-    thread = threading.Thread(
-        target=trainer_listener,
-        args=(producer_queue, stop_queue,))
-    thread.start()
-    threads.append(thread)
-
-    thread = threading.Thread(
-        target=hrm_listener,
-        args=(producer_queue, stop_queue,))
-    thread.start()
-    threads.append(thread)
+    for ble_server in settings.BLE_SERVERS:
+        logger.info(f"starting {ble_server.name}")
+        thread = threading.Thread(
+            target=call_collector,
+            args=(ble_server, producer_queue, stop_queue,))
+        thread.start()
+        threads.append(thread)
 
     input("press any key to stop...")
     stop_queue.put("stop")
