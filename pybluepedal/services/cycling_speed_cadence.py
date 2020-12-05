@@ -4,7 +4,6 @@ import queue
 
 from bluepy import btle
 from bluepy.btle import DefaultDelegate, Peripheral
-
 from pybluepedal.common.base import BaseService
 from pybluepedal.common.byte_ops import byte_array_to_int
 
@@ -37,7 +36,7 @@ class CSCService(BaseService):
     def supports_feature(self, name: str) -> bool:
         """Returns true if the feature is supported"""
 
-        characteristics = self.__service.getCharacteristics(
+        characteristics = self._service.getCharacteristics(
             forUUID=CSCService.CHARACTERISTIC_FEATURE)
 
         if len(characteristics) < 1:
@@ -72,13 +71,13 @@ class CSCService(BaseService):
 
         self._peripheral.setDelegate(delegate)
 
-        characteristics = self.__service.getCharacteristics(
+        characteristics = self._service.getCharacteristics(
             forUUID=CSCService.CHARACTERISTIC_MEASUREMENT)
 
         characteristic = characteristics[0]
 
         resp = self._peripheral.writeCharacteristic(
-            characteristic.getHandle() + 1, "\x01\x00", True)
+            characteristic.getHandle() + 1, b"\x01\x00", True)
 
         logger.debug(f"notification started: {resp}")
 
