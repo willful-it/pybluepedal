@@ -1,5 +1,0 @@
-wheel
-autopep8
-python3-pip
-libglib2.0-dev
-bluepy

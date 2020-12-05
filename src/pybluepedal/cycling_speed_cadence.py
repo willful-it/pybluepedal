@@ -3,22 +3,11 @@ import collections as col
 from bluepy import btle
 from bluepy.btle import ADDR_TYPE_RANDOM, DefaultDelegate, Peripheral
 
+from conversion import byte_array_to_int
+
 OnOffNotification = col.namedtuple('EnableNotification', ['on', 'off'])
 
 measurement_notification = OnOffNotification(b"\x01\x00", b"\x00\x00")
-
-
-def byte_array_to_int(value):
-    # Raw data is hexstring of int values, as a series of bytes, in little endian byte order
-    # values are converted from bytes -> bytearray -> int
-    # e.g., b'\xb8\x08\x00\x00' -> bytearray(b'\xb8\x08\x00\x00') -> 2232
-
-    # print(f"{sys._getframe().f_code.co_name}: {value}")
-
-    value = bytearray(value)
-    value = int.from_bytes(value, byteorder="little")
-
-    return value
 
 
 class CSCService:
@@ -95,9 +84,6 @@ class MyDelegate(btle.DefaultDelegate):
         btle.DefaultDelegate.__init__(self)
 
     def handleNotification(self, cHandle, data):
-        mask_size = 1
-        # [3, 0, 0, 0, 0 , 0, 136, 0, 0, 0, 64]
-
         values = bytearray(data)
 
         cumulative_wheel_revolutions = byte_array_to_int(bytes(values[1:5]))
