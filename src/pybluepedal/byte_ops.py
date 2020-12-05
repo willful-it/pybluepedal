@@ -10,3 +10,7 @@ def byte_array_to_int(value):
     value = int.from_bytes(value, byteorder="little")
 
     return value
+
+
+def check_bit_l2r(byte, bit):
+    return bool(byte & (0b10000 >> bit))
