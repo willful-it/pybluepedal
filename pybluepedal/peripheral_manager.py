@@ -5,7 +5,7 @@ import time
 
 from bluepy.btle import ADDR_TYPE_RANDOM, Peripheral
 
-from heart_rate import HeartRateDelegate, HeartRateService
+from pybluepedal.heart_rate import HeartRateDelegate, HeartRateService
 
 logging.basicConfig(level=logging.DEBUG,
                     format="%(asctime)s %(levelname)s %(threadName)s %(name)s %(message)s")
@@ -27,9 +27,7 @@ def consumer(producer_queue: queue.Queue, stop_queue: queue.Queue):
     logger.info("finish consumer")
 
 
-def peripheral_handling(producer_queue: queue.Queue, stop_queue: queue.Queue):
-
-    device_address = "C4:DB:A6:DC:51:5A"
+def peripheral_handling(device_address: str, producer_queue: queue.Queue, stop_queue: queue.Queue):
 
     logger.info(f"connecting to {device_address}")
     peripheral = Peripheral(device_address, addrType=ADDR_TYPE_RANDOM)
@@ -43,23 +41,28 @@ def peripheral_handling(producer_queue: queue.Queue, stop_queue: queue.Queue):
     logger.info("finish peripheral")
 
 
-producer_queue = queue.Queue()
-stop_queue = queue.Queue()
+def run():
+    producer_queue = queue.Queue()
+    stop_queue = queue.Queue()
 
-threads = []
-thread = threading.Thread(target=consumer,
-                          args=(producer_queue, stop_queue,))
-thread.start()
-threads.append(thread)
+    threads = []
+    thread = threading.Thread(target=consumer,
+                              args=(producer_queue, stop_queue,))
+    thread.start()
+    threads.append(thread)
 
-thread = threading.Thread(target=peripheral_handling,
-                          args=(producer_queue, stop_queue,))
-thread.start()
-threads.append(thread)
+    thread = threading.Thread(target=peripheral_handling,
+                              args=("C4:DB:A6:DC:51:5A", producer_queue, stop_queue,))
+    thread.start()
+    threads.append(thread)
 
-input("press any key to stop...")
-stop_queue.put("stop")
+    input("press any key to stop...")
+    stop_queue.put("stop")
 
-logger.info("waiting threads to finish...")
-for thread in threads:
-    thread.join()
+    logger.info("waiting threads to finish...")
+    for thread in threads:
+        thread.join()
+
+
+if __name__ == "__main__":
+    run()

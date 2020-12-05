@@ -3,7 +3,7 @@ import queue
 
 from bluepy.btle import DefaultDelegate, Peripheral
 
-from byte_ops import check_bit_l2r
+from pybluepedal.byte_ops import check_bit_l2r
 
 logger = logging.getLogger("HeartRateService")
 
@@ -55,25 +55,3 @@ class HeartRateDelegate(DefaultDelegate):
 
         self.__producer_queue.put(data)
         logger.debug(f"added to queue {data}")
-
-
-# print("Services...")
-# for svc in dev.services:
-#     print("---------------------------")
-#     uuid = str(svc.uuid)
-#     name = str(svc.uuid.getCommonName())
-#     print(uuid, name)
-
-#     print(f"Characteristics for {name}")
-#     sensor = btle.UUID(uuid)
-
-#     sensor_service = dev.getServiceByUUID(sensor)
-#     for ch in sensor_service.getCharacteristics():
-#         print(str(ch), str(ch.uuid), str(ch))
-#         try:
-#             val = ch.read()
-#             print("   > Raw value", str(val), binascii.b2a_hex(val))
-#         except Exception as e:
-#             print("   > Error")
-#             pass
-#             # print(e)

@@ -2,4 +2,3 @@ wheel
 autopep8
 pylint
 bluepy
-rx
