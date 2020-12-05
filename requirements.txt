@@ -1,5 +1,5 @@
 autopep8
 bluepy
+flake8
 pre-commit
-pylint
 wheel

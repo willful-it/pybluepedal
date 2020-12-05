@@ -11,7 +11,7 @@ logging.basicConfig(
     level=logging.DEBUG,
     format="%(asctime)s %(levelname)s %(threadName)s %(name)s %(message)s")
 
-logger = logging.getLogger("PeripheralManager")
+logger = logging.getLogger("MultiThreadRunner")
 
 
 def consumer(producer_queue: queue.Queue, stop_queue: queue.Queue):
