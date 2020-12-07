@@ -5,6 +5,7 @@ import time
 
 import pybluepedal.collectors as collectors
 import pybluepedal.settings as settings
+from pybluepedal.device import PedalDevice
 
 logging.basicConfig(
     level=logging.DEBUG,
@@ -13,7 +14,10 @@ logging.basicConfig(
 logger = logging.getLogger("Dispatcher")
 
 
-def dispacher(producer_queue: queue.Queue, stop_queue: queue.Queue):
+def _dispacher(producer_queue: queue.Queue,
+               stop_queue: queue.Queue,
+               sleep_time: int = 1):
+
     logger.info("starting consumer")
 
     while stop_queue.empty():
@@ -22,18 +26,19 @@ def dispacher(producer_queue: queue.Queue, stop_queue: queue.Queue):
             logger.debug(f"processing {item}")
 
         logger.debug("waiting for data...")
-        time.sleep(5)
+        time.sleep(sleep_time)
 
     logger.info("finish consumer")
 
 
-def call_collector(
-        ble_server: settings.BLEServer,
+def _call_collector(
+        collector_func,
+        device: PedalDevice,
         producer_queue: queue.Queue,
         stop_queue: queue.Queue):
 
-    method_to_call = getattr(collectors, str(ble_server.function))
-    method_to_call(ble_server, producer_queue, stop_queue)
+    method_to_call = getattr(collectors, str(collector_func))
+    method_to_call(device, producer_queue, stop_queue)
 
 
 def run():
@@ -42,27 +47,30 @@ def run():
 
     threads = []
 
-    logger.info("starting dispatcher thread")
-    thread = threading.Thread(
-        target=dispacher,
-        args=(producer_queue, stop_queue,))
+    thread = threading.Thread(_dispacher, (producer_queue, stop_queue,))
     thread.start()
     threads.append(thread)
 
+    pedal_devices = []
     for ble_server in settings.BLE_SERVERS:
-        logger.info(f"starting {ble_server.name}")
-        thread = threading.Thread(
-            target=call_collector,
-            args=(ble_server, producer_queue, stop_queue,))
-        thread.start()
-        threads.append(thread)
+        pedal_device = PedalDevice(ble_server.address, ble_server.name)
+        pedal_device.connect()
 
-    input("press any key to stop...")
-    stop_queue.put("stop")
+        pedal_devices.append(pedal_device)
+
+        for func in ble_server.functions:
+            thread = threading.Thread(
+                target=_call_collector,
+                args=(func, pedal_device, producer_queue, stop_queue,))
+            thread.start()
+            threads.append(thread)
 
     logger.info("waiting threads to finish...")
     for thread in threads:
         thread.join()
+
+    for device in pedal_devices:
+        device.disconnect()
 
 
 if __name__ == "__main__":

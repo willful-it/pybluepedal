@@ -8,7 +8,7 @@ load_dotenv(find_dotenv())
 
 logger = logging.getLogger("Collector")
 
-BLEServer = col.namedtuple('BLEServer', "name address function")
+BLEServer = col.namedtuple('BLEServer', "name address functions")
 
 BLE_SERVER_KEYS = os.getenv("BLE_SERVER_KEYS", []).split(" ")
 
@@ -18,7 +18,7 @@ for server in BLE_SERVER_KEYS:
         BLEServer(
             os.getenv(f"{server.upper()}_NAME"),
             os.getenv(f"{server.upper()}_ADDRESS"),
-            os.getenv(f"{server.upper()}_COLLECTOR_FUNCTION"),
+            os.getenv(f"{server.upper()}_COLLECTOR_FUNCTIONS").split(" "),
         )
     )
 
