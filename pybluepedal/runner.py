@@ -1,9 +1,9 @@
 import logging
 import queue
 
-import pybluepedal.settings as settings
 from pybluepedal.collectors import run_collector_in_thread
 from pybluepedal.dispacher import Dispatcher
+from pybluepedal.settings import Settings
 
 logging.basicConfig(
     level=logging.DEBUG,
@@ -13,6 +13,7 @@ logger = logging.getLogger("Runner")
 
 
 def run():
+    settings = Settings()
     event_queue = queue.Queue()  # queue to write/read events
     stop_queue = queue.Queue()  # queue to signal threads to stop
 

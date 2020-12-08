@@ -2,5 +2,8 @@ autopep8
 bluepy
 flake8
 pre-commit
+pytest
+pytest-cov
+pytest-runner
 python-dotenv
 wheel
