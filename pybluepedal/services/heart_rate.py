@@ -22,10 +22,8 @@ class HeartRateService(BaseService):
 
         self._peripheral.setDelegate(delegate)
 
-        characteristics = self._service.getCharacteristics(
-            forUUID=HeartRateService.CHARACTERISTIC_MEASUREMENT)
-
-        characteristic = characteristics[0]
+        characteristic = self._service.getCharacteristics(
+            forUUID=HeartRateService.CHARACTERISTIC_MEASUREMENT)[0]
 
         resp = self._peripheral.writeCharacteristic(
             characteristic.getHandle() + 1, b"\x01\x00", True)

@@ -46,34 +46,13 @@ class CSCService(BaseService):
 
         return CSCService.CSC_FEATURES[name] & val > 0
 
-    def supports_crank_revolution(self) -> bool:
-        """True if the CSCService.FEATURE_CRANK_REVOLUTION_DATA is supported"""
-
-        return self.supports_feature(CSCService.FEATURE_CRANK_DATA)
-
-    def supports_wheel_revolution(self) -> bool:
-        """True if the CSCService.FEATURE_WHEEL_REVOLUTION_DATA is supported"""
-
-        return self.supports_feature(CSCService.FEATURE_WHEEL_DATA)
-
-    def supports_multiple_sensor_locations(self) -> bool:
-        """
-        True if the CSCService.FEATURE_MULTIPLE_SENSOR_LOCATIONS
-        is supported
-        """
-
-        return self.supports_feature(
-            CSCService.FEATURE_MULTIPLE_SENSOR_LOCATIONS)
-
     def start_notifications(self, delegate: BaseDelegate):
         """Starts the notifications for the characteristic measurement"""
 
         self._peripheral.setDelegate(delegate)
 
-        characteristics = self._service.getCharacteristics(
-            forUUID=CSCService.CHARACTERISTIC_MEASUREMENT)
-
-        characteristic = characteristics[0]
+        characteristic = self._service.getCharacteristics(
+            forUUID=CSCService.CHARACTERISTIC_MEASUREMENT)[0]
 
         resp = self._peripheral.writeCharacteristic(
             characteristic.getHandle() + 1, b"\x01\x00", True)
