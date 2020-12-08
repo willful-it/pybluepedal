@@ -1,3 +1,4 @@
+"""Module to manage settings"""
 import logging
 import os
 
@@ -9,6 +10,7 @@ logger = logging.getLogger("Collector")
 
 
 class Settings:
+    """Class to load settings"""
 
     def __init__(self):
         load_dotenv(find_dotenv())
