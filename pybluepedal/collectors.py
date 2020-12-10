@@ -15,10 +15,16 @@ def load_collector(collector_func: str) -> tuple:
     # collector is in the <module>.<function> format
     collector = collector_func.split(".")
 
-    collector_module_name = importlib.import_module(collector[0])
-    collector_func_name = collector[1]
+    if len(collector) < 2:
+        raise ValueError(
+            "invalid collector func - must have the "
+            "module.function_name format")
 
-    return collector_module_name, collector_func_name
+    collector_module_name = ".".join(collector[:-1])
+    collector_module = importlib.import_module(collector_module_name)
+    collector_func_name = collector[-1]
+
+    return collector_module, collector_func_name
 
 
 def run_collector_in_thread(

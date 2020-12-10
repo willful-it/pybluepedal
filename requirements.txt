@@ -4,6 +4,7 @@ flake8
 pre-commit
 pytest
 pytest-cov
+pytest-mock
 pytest-runner
 python-dotenv
 wheel
