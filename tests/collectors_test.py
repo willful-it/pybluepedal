@@ -10,17 +10,22 @@ from pybluepedal.services.heart_rate import HeartRateDelegate, HeartRateService
 
 
 def test_should_be_able_to_load_collector():
+    # arrange
     collector_func = "pybluepedal.collectors.hrm_collector"
 
+    # act
     collector_module, collector_func_name = load_collector(collector_func)
 
+    # assert
     assert collector_module.__name__ == "pybluepedal.collectors"
     assert collector_func_name == "hrm_collector"
 
 
 def test_should_raise_error_if_collector_name_is_invalid():
+    # arrange
     collector_func = "hrm_collector"
 
+    # act & assert
     with pytest.raises(ValueError):
         load_collector(collector_func)
 
