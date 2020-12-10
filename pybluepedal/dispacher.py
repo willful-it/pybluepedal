@@ -23,23 +23,27 @@ class Dispatcher():
         """
         logger.info("starting dispatcher")
 
-        while self.__stop_queue.empty():
+        while True:
             while not self.__event_queue.empty():
                 item = self.__event_queue.get()
                 logger.debug(f"processing {item}")
+
+            if not self.__stop_queue.empty():
+                logger.debug("stopping...")
+                break
 
             logger.debug("waiting for data...")
             time.sleep(sleep_time)
 
         logger.info("finish dispacher")
 
-    def run_in_thread(self) -> threading.Thread:
+    def run_in_thread(self, sleep_time: int = 1) -> threading.Thread:
         """Runs the dispatcher in a thread
 
         Returns:
             threading.Thread: The started thread
         """
-        thread = threading.Thread(target=self.run)
+        thread = threading.Thread(target=self.run, args=(sleep_time, ))
         thread.start()
 
         return thread
